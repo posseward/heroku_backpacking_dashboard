@@ -476,7 +476,7 @@ timepoints_18, timepoints_6 = daylight_times(test)
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 app = dash.Dash(__name__)
-server = app.server
+#server = app.server
 
 # ------------------------------------------------------------------------------
 # App layout
