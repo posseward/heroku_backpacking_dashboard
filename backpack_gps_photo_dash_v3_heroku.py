@@ -473,9 +473,9 @@ timepoints_18, timepoints_6 = daylight_times(test)
 
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-external_stylesheets = [dbc.themes.BOOTSTRAP]
 
-app = dash.Dash(__name__)
+
+app = dash.Dash(__name__, external_stylesheets = [dbc.themes.BOOTSTRAP])
 server = app.server
 
 # ------------------------------------------------------------------------------
@@ -484,28 +484,28 @@ server = app.server
 
 info = dbc.Card(
     [
-        dbc.FormGroup(
+        dbc.Card(
             [
                 dcc.Graph(
                     id='my_topo',
                 ),
             ]
         ),
-        dbc.FormGroup(
+        dbc.Card(
             [
                 dcc.Graph(
                     id='my_route'
                 ),
             ]
         ),
-        dbc.FormGroup(
+        dbc.Card(
             [
                 dcc.Graph(
                     id='my_timeline'
                 ),
             ]
         ),
-        dbc.FormGroup(
+        dbc.Card(
             [
                 dcc.Slider(
                     id='my-slider',
@@ -517,31 +517,31 @@ info = dbc.Card(
             ]
         ),
     ],
-    body=True, style={'backgroundColor': '#323130'}
+    style={'backgroundColor': '#323130'}
+)
+
+photo_card = dbc.Card(
+    [
+        dbc.CardImg(id="image", bottom=True),
+    ],
 )
 
 
 app.layout = dbc.Container(
     [
+
+
         dbc.Row(
             [
-                dbc.Col(
-
-
-
-                        dbc.Row(
-                            html.Img(id='image' , style={'height' : '675px', 'padding-top' : 20, 'padding-left' : 20}) ,justify="center"),
-
-
-                md=7),
-                dbc.Col(info, md=5),
+                #dbc.Col( html.Img(id='image' , style={'width' : '100%', 'padding-top' : 20, 'padding-left' : 20}),  width=7),
+                dbc.Col(photo_card, width=7),
+                dbc.Col(info, width=5),
             ],
-            align="start", justify="center"
         ),
-    ],
-    fluid=True,style={'backgroundColor':'#323130'}
-)
 
+    ],
+    fluid=True, style={'backgroundColor':'#323130'}
+)
 
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
@@ -557,6 +557,12 @@ app.layout = dbc.Container(
 #        raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
 #    return flask.send_from_directory(image_directory, image_name)
 
+@app.server.route('{}<image_path>.jpg'.format(static_image_route))
+def serve_image(image_path):
+    image_name = '{}.jpg'.format(image_path)
+    if image_name not in list_of_images:
+        raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
+    return flask.send_from_directory(image_directory, image_name)
 
 
 @app.callback(
@@ -688,11 +694,16 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
     fig_route.update_geos(fitbounds="locations")
 
 
-    image_filename = image_directory + '/' +list_of_images[value] # replace with your own image
-    encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+#    image_filename = image_directory + '/' +list_of_images[value] # replace with your own image
+#    encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 
-    return 'data:image/png;base64,{}'.format(encoded_image.decode()) , fig_map, fig_timeline, fig_route
+#base64 way of serving images
+#this goes in the return, isntead of image_filename
+#'data:image/png;base64,{}'.format(encoded_image.decode())
+#    print(image_filename)
+
+    return static_image_route + list_of_images[value] , fig_map, fig_timeline, fig_route
 
 #mode='jupyterlab'   inline   external
 
