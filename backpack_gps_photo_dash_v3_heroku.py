@@ -492,12 +492,28 @@ info = dbc.Container(
                 dcc.Graph(id='my_topo'),
                 dcc.Graph(id='my_route'),
                 dcc.Graph(id='my_timeline'),
+                dbc.Row(
+                [
+
+                dbc.Col(
+                dbc.Button('Back'),
+                width=1),
+
+                dbc.Col(
                 dcc.Slider(
                     id='my-slider',
                     min=0,
                     max=(len(list_of_images) - 1),
                     step=1,
    #                 value=0,
+                    ),
+                    width=10),
+
+                    dbc.Col(
+                    dbc.Button('Forward'),
+                    width=1),
+
+                    ]
                     ),
                 ],
                 body=True,
