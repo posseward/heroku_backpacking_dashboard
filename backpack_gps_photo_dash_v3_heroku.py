@@ -482,22 +482,23 @@ server = app.server
 # App layout
 
 
-info = dbc.Card(
+info = html.Div(
     [
+    dbc.Row(
         dbc.Card(
-            [
-                dcc.Graph(
-                    id='my_topo',
+                dcc.Graph(id='my_topo'),
                 ),
-            ]
         ),
+    dbc.Row(
         dbc.Card(
             [
                 dcc.Graph(
                     id='my_route'
                 ),
             ]
+            ),
         ),
+    dbc.Row(
         dbc.Card(
             [
                 dcc.Graph(
@@ -505,6 +506,8 @@ info = dbc.Card(
                 ),
             ]
         ),
+        ),
+    dbc.Row(
         dbc.Card(
             [
                 dcc.Slider(
@@ -516,32 +519,92 @@ info = dbc.Card(
                 ),
             ]
         ),
+        ),
     ],
     style={'backgroundColor': '#323130'}
 )
 
 photo_card = dbc.Card(
     [
-        dbc.CardImg(id="image", bottom=True),
+        dbc.CardImg(id="image"),
+    ],body=True
+)
+
+
+#navbar = dbc.NavbarSimple(
+#    children=[
+#    dbc.Row(
+#        dbc.NavItem(dbc.NavLink("Rae Lakes 2020", href="#")),
+#        dbc.DropdownMenu(
+#            children=[
+#                dbc.DropdownMenuItem("More pages", header=True),
+#                dbc.DropdownMenuItem("Page 2", href="#"),
+#                dbc.DropdownMenuItem("Page 3", href="#"),
+#            ],
+#            nav=True,
+#            in_navbar=True,
+#            label="More Trips",
+#        ),
+#        dbc.NavItem(dbc.NavLink("Page 1", href="#")),
+#        ),
+#    ],
+#    brand="Backpacking Dashboard",
+#    brand_href="#",
+#    color="green",
+#    dark=True,
+#    fluid=True,
+#)
+
+navbar = dbc.Navbar(
+    [
+        dbc.Col(dbc.NavbarBrand("Backpacking Dashboard", href="#"), width=2),
+        dbc.Col(
+            dbc.Nav(dbc.NavItem(dbc.NavLink("Rae Lakes 2020")), navbar=True),
+            width=2),
+        dbc.Col(
+            dbc.DropdownMenu(
+                        children=[
+                            dbc.DropdownMenuItem("More pages", header=True),
+                            dbc.DropdownMenuItem("Page 2", href="https://dash.plotly.com/dash-core-components/upload"),
+                            dbc.DropdownMenuItem("Page 3", href="https://dash.plotly.com/dash-core-components/upload"),
+                        ],
+                        #nav=True,
+                        in_navbar=True,
+                        label="More Trips",
+                        color='green',
+
+                    ),
+
+            width=2),
+
+        dbc.Col(
+            dbc.Nav(dbc.NavItem(dbc.NavLink("Github")), navbar=True),
+            width=6,
+        ),
     ],
+    color="green",
+    dark=True,
 )
 
 
 app.layout = dbc.Container(
     [
-
+        dbc.Row(
+            dbc.Col(navbar)
+                ),
 
         dbc.Row(
             [
                 #dbc.Col( html.Img(id='image' , style={'width' : '100%', 'padding-top' : 20, 'padding-left' : 20}),  width=7),
-                dbc.Col(photo_card, width=7),
-                dbc.Col(info, width=5),
+                dbc.Col(photo_card, md=7),
+                dbc.Col(info, md=5),
             ],
         ),
 
     ],
     fluid=True, style={'backgroundColor':'#323130'}
 )
+
 
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
@@ -603,9 +666,9 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
     dff.iloc[value, dff.columns.get_loc('Selected')] = 1
 
 
-    fig_map = px.scatter_mapbox(df_geo, lat="Latitude", lon="Longitude", opacity=0.5, zoom=zoom, center=center, color="Altitude_feet", hover_data=["Cumulative_distance_miles", "Cumulative_distance_normalized", "Route_order"])
+    fig_map = px.scatter_mapbox(df_geo, lat="Latitude", lon="Longitude", opacity=0.5, zoom=zoom, center=center, color="Altitude_feet", hover_data=["Cumulative_distance_miles"])
 
-    fig2_map = px.scatter_mapbox(dff, lat="Latitude", color_discrete_sequence=['white'], lon="Longitude",hover_name="Events", hover_data=["Altitude_feet", "ID_list", "ID_order"], zoom=zoom,  opacity = 0.7, size = "Selected", custom_data=["ID_order"])
+    fig2_map = px.scatter_mapbox(dff, lat="Latitude", color_discrete_sequence=['white'], lon="Longitude",hover_name="Events", zoom=zoom, hover_data=[], opacity = 0.7, size = "Selected", custom_data=["ID_order"])
     fig_map.add_trace(fig2_map.data[0])
 
 
@@ -635,6 +698,8 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
     fig_map.update_layout(coloraxis_colorbar_y = 0.5)
     fig_map.update_layout(coloraxis_colorbar_tickfont_color = 'white')
     fig_map.update_layout(coloraxis_colorbar_title_font_color = 'white')
+
+
 
 
 #make timeline
@@ -669,7 +734,7 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 
     fig_route = go.Figure(data=go.Scatter(x=dff_geo.Cumulative_distance_miles, y=dff_geo.Altitude_feet, mode='markers',opacity = 0.9, marker_color= dff_geo.Altitude_feet))
 
-    fig2_route = px.scatter(dff, x="Cumulative_distance_miles", y="Altitude_feet", color_discrete_sequence=['white'], opacity = 0.7, hover_name="Events", hover_data=["Altitude_feet", "ID_list", "ID_order"],
+    fig2_route = px.scatter(dff, x="Cumulative_distance_miles", y="Altitude_feet", color_discrete_sequence=['white'], opacity = 0.7, hover_name="Events", hover_data=["Altitude_feet"],
                           size = "Selected", custom_data=["ID_order"])
 
 
@@ -692,6 +757,9 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
     fig_route.update_traces(showlegend=False)
 
     fig_route.update_geos(fitbounds="locations")
+
+
+
 
 
 #    image_filename = image_directory + '/' +list_of_images[value] # replace with your own image
