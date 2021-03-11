@@ -482,44 +482,55 @@ server = app.server
 # App layout
 
 
-info = html.Div(
+info = dbc.Container(
     [
+
+
     dbc.Row(
         dbc.Card(
+        [
                 dcc.Graph(id='my_topo'),
-                ),
-        ),
-    dbc.Row(
-        dbc.Card(
-            [
-                dcc.Graph(
-                    id='my_route'
-                ),
-            ]
-            ),
-        ),
-    dbc.Row(
-        dbc.Card(
-            [
-                dcc.Graph(
-                    id='my_timeline'
-                ),
-            ]
-        ),
-        ),
-    dbc.Row(
-        dbc.Card(
-            [
+                dcc.Graph(id='my_route'),
+                dcc.Graph(id='my_timeline'),
                 dcc.Slider(
                     id='my-slider',
                     min=0,
                     max=(len(list_of_images) - 1),
                     step=1,
    #                 value=0,
+                    ),
+                ],
+                body=True,
+                style={'backgroundColor': '#323130'},
                 ),
-            ]
         ),
-        ),
+#    dbc.Row(
+#        dbc.Card(
+#            [
+#                dcc.Graph(id='my_route'),
+#            ]
+#            ),
+#        ),
+#    dbc.Row(
+#        dbc.Card(
+#            [
+#                dcc.Graph(id='my_timeline'),
+#            ]
+#        ),
+#        ),
+#    dbc.Row(
+#        dbc.Card(
+#            [
+#                dcc.Slider(
+#                    id='my-slider',
+#                    min=0,
+#                    max=(len(list_of_images) - 1),
+#                    step=1,
+   #                 value=0,
+#                ),
+#            ]
+#        ),
+#        ),
     ],
     style={'backgroundColor': '#323130'}
 )
@@ -527,40 +538,21 @@ info = html.Div(
 photo_card = dbc.Card(
     [
         dbc.CardImg(id="image"),
-    ],body=True
+    ],
+    body=True,
+     style={'backgroundColor': '#323130'},
+      outline=False,
 )
 
 
-#navbar = dbc.NavbarSimple(
-#    children=[
-#    dbc.Row(
-#        dbc.NavItem(dbc.NavLink("Rae Lakes 2020", href="#")),
-#        dbc.DropdownMenu(
-#            children=[
-#                dbc.DropdownMenuItem("More pages", header=True),
-#                dbc.DropdownMenuItem("Page 2", href="#"),
-#                dbc.DropdownMenuItem("Page 3", href="#"),
-#            ],
-#            nav=True,
-#            in_navbar=True,
-#            label="More Trips",
-#        ),
-#        dbc.NavItem(dbc.NavLink("Page 1", href="#")),
-#        ),
-#    ],
-#    brand="Backpacking Dashboard",
-#    brand_href="#",
-#    color="green",
-#    dark=True,
-#    fluid=True,
-#)
-
 navbar = dbc.Navbar(
     [
-        dbc.Col(dbc.NavbarBrand("Backpacking Dashboard", href="#"), width=2),
+        dbc.Col(
+            dbc.Nav( dbc.NavItem(dbc.NavLink("Backpacking Dashboard",href='#')), navbar=True),
+             lg=3),
         dbc.Col(
             dbc.Nav(dbc.NavItem(dbc.NavLink("Rae Lakes 2020")), navbar=True),
-            width=2),
+            lg=6),
         dbc.Col(
             dbc.DropdownMenu(
                         children=[
@@ -575,11 +567,11 @@ navbar = dbc.Navbar(
 
                     ),
 
-            width=2),
+            lg=2),
 
         dbc.Col(
-            dbc.Nav(dbc.NavItem(dbc.NavLink("Github")), navbar=True),
-            width=6,
+            dbc.Nav(dbc.NavItem(dbc.NavLink("Github", href='https://github.com/posseward/heroku_backpacking_dashboard')), navbar=True),
+            lg=1,
         ),
     ],
     color="green",
@@ -587,11 +579,13 @@ navbar = dbc.Navbar(
 )
 
 
-app.layout = dbc.Container(
+
+
+app.layout = html.Div(
     [
         dbc.Row(
-            dbc.Col(navbar)
-                ),
+            dbc.Col(navbar),
+                no_gutters=True),
 
         dbc.Row(
             [
@@ -599,10 +593,13 @@ app.layout = dbc.Container(
                 dbc.Col(photo_card, md=7),
                 dbc.Col(info, md=5),
             ],
-        ),
+        no_gutters=True),
 
     ],
-    fluid=True, style={'backgroundColor':'#323130'}
+
+ style={'backgroundColor':'#323130', 'width' : '100%'},
+
+
 )
 
 
