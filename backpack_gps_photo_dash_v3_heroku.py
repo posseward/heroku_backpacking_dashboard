@@ -34,16 +34,15 @@ from functions import *
 # In[4]:
 
 #enter path to your folder of images
-path_imagefolder = 'rae_lakes_github'
+image_directory = 'rae_lakes_github'
 
 
 # In[]
-df = create_image_df(path_imagefolder)
+df = create_image_df(image_directory)
 
 # In[11]:
 
 #generate static image for display on website
-image_directory = path_imagefolder
 list_of_images = df['ID_list'].tolist()
 
 static_image_route = '/static/'
@@ -74,9 +73,9 @@ df = predict_image_route_distance(df,df_geo)
 
 # In[26]:
 
-test = df['Events_local']
+#test = df['Events_local']
 
-timepoints_18, timepoints_6 = daylight_times(test)
+timepoints_18, timepoints_6 = daylight_times(df['Events_local'])
 
 
 # In[28]:
