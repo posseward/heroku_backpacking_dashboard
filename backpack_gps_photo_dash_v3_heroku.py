@@ -140,74 +140,69 @@ path_imagefolder = 'rae_lakes_github'
 # In[7]:
 
 #get data from images (coordinates and timepoints) and image file names
-image_list = os.listdir(path_imagefolder)
-image_list = [a for a in image_list if a.endswith('jpg')]
-data_list = []
-ID_list = []
-for i, a in enumerate(image_list):
-    data = gpsphoto.getGPSData(path_imagefolder + f'/{a}')
-    data_list.append(data)
-    ID_list.append(a)
+def create_image_df(path_imagefolder):
+    
+        
+    image_list = os.listdir(path_imagefolder)
+    image_list = [a for a in image_list if a.endswith('jpg')]
+    data_list = []
+    ID_list = []
+    for i, a in enumerate(image_list):
+        data = gpsphoto.getGPSData(path_imagefolder + f'/{a}')
+        data_list.append(data)
+        ID_list.append(a)
+    
+    #create dataframe
+    df = pd.DataFrame(data_list)
+    df['ID_list'] = ID_list
+    
+    #convert altitude meters of feet
+    df['Altitude_feet'] = df['Altitude'] * 3.28084
 
-#create dataframe
-df = pd.DataFrame(data_list)
-df['ID_list'] = ID_list
-
-#convert altitude meters of feet
-df['Altitude_feet'] = df['Altitude'] * 3.28084
-
-#DETELE THIS PART?
-#df['Date'].isna().sum()
-only_na = df[df['Date'].isna()]
-
-#drop NA columns
-df.dropna(inplace=True)
-
-#reset index for NA
-df.reset_index(drop=True, inplace=True)
-
-
-# In[8]:
-
-df_events = []
-
-for event in range(len(df)):
-    date_event = datetime.strptime(df['Date'][event], "%m/%d/%Y")
-    time_event = datetime.strptime(df['UTC-Time'][event], "%H:%M:%S")
-    combine_event = datetime.combine(datetime.date(date_event), datetime.time(time_event))
-    df_events.append(combine_event)
-
-#create data column of timepoints
-df['Events'] = df_events
-
-#sort dataframe by timepoints
-df = df.sort_values(by='Events')
-df.reset_index(inplace=True)
-
-#create data columns of selected and not selected for dashboard
-df['Zeros'] = 0
-df['Selected'] = 0
-
-#normalize timestamps
-scaler = MinMaxScaler()
-df['Events_normalized'] = scaler.fit_transform(df['Events'].values.reshape(-1,1))
-
-#difference between each timestamp
-df['Events_difference'] = df.Events_normalized - df.Events_normalized.shift()
-df['Events_difference'][0] = 0
-df['ID_order'] = np.arange(len(df))
-
-# In[9]:
-
-#convert events to universial time??
-df['Events'] = df['Events'].dt.tz_localize('UTC')
-
-# In[10]:
-
-
-#Convert to local time
-df['Events_local'] = df['Events'].dt.tz_convert('US/Pacific')
-
+    
+    #drop NA columns
+    df.dropna(inplace=True)
+    
+    #reset index for NA
+    df.reset_index(drop=True, inplace=True)
+    
+    df_events = []
+    
+    for event in range(len(df)):
+        date_event = datetime.strptime(df['Date'][event], "%m/%d/%Y")
+        time_event = datetime.strptime(df['UTC-Time'][event], "%H:%M:%S")
+        combine_event = datetime.combine(datetime.date(date_event), datetime.time(time_event))
+        df_events.append(combine_event)
+    
+    #create data column of timepoints
+    df['Events'] = df_events
+    
+    #sort dataframe by timepoints
+    df = df.sort_values(by='Events')
+    df.reset_index(inplace=True)
+    
+    #create data columns of selected and not selected for dashboard
+    df['Zeros'] = 0
+    df['Selected'] = 0
+    
+    #normalize timestamps
+    scaler = MinMaxScaler()
+    df['Events_normalized'] = scaler.fit_transform(df['Events'].values.reshape(-1,1))
+    
+    #difference between each timestamp
+    df['Events_difference'] = df.Events_normalized - df.Events_normalized.shift()
+    df['Events_difference'][0] = 0
+    df['ID_order'] = np.arange(len(df))
+    
+    #convert events to universial time??
+    df['Events'] = df['Events'].dt.tz_localize('UTC')
+    
+    df['Events_local'] = df['Events'].dt.tz_convert('US/Pacific')
+        
+    return df
+    
+# In[]
+df = create_image_df(path_imagefolder)
 
 # In[11]:
 
@@ -432,7 +427,7 @@ info = dbc.Container(
                 dcc.Slider(
                     id='my-slider',
                     min=0,
-                    max=(len(list_of_images) - 1),
+ #                   max=(len(list_of_images) - 1),
                     step=1,
    #                 value=0,
                     ),
@@ -726,6 +721,9 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+    
+    #for spyder add
+    #use_reloader=False
 
 
 # In[ ]:
