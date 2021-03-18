@@ -142,7 +142,6 @@ path_imagefolder = 'rae_lakes_github'
 #get data from images (coordinates and timepoints) and image file names
 def create_image_df(path_imagefolder):
     
-        
     image_list = os.listdir(path_imagefolder)
     image_list = [a for a in image_list if a.endswith('jpg')]
     data_list = []
@@ -220,50 +219,48 @@ geo_filename = 'rae_lakes_2020.geojson'
 
 # In[13]:
 
-#go get the GPS track, probably move this up to the beginning with getting the other data
+def create_geo_df(geo_filename):
+    
+    df_gps = geopandas.read_file(geo_filename)
+    
+    combined = []
+    
+    for a in range(len(df_gps.geometry[0])):
+        coords=list(df_gps.geometry[0][a].coords)
+        combined += coords
+    
+    df_geo = pd.DataFrame(combined, columns =['Longitude', 'Latitude', 'Altitude'])
+    df_geo['Altitude_feet'] = df_geo['Altitude'] * 3.28084
+    
+    # find distance between each coordinate on route
+    df_geo['Distance'] = haversine(df_geo.Latitude.shift(), df_geo.Longitude.shift(),
+                     df_geo.Latitude, df_geo.Longitude)
+    
+    #convert km to miles and its good
+    #add cumulative distance
+    
+    #convert to miles
+    df_geo['Distance_miles'] = df_geo['Distance'] * 0.621371
+    
+    #calculate cumulative distance
+    df_geo['Cumulative_distance_miles']= df_geo['Distance_miles'].cumsum()
+    
+    #create data column of the index of data points
+    df_geo['Route_order'] = np.arange(len(df_geo))
+    
+    #enter in zero for initial coordinate, I assume because it can't subtract from anything
+    df_geo.Distance[0] = 0
+    df_geo.Distance_miles[0] = 0
+    df_geo.Cumulative_distance_miles[0] = 0
+    
+    #create a normalized distance
+    df_geo['Cumulative_distance_normalized'] = df_geo.Cumulative_distance_miles / df_geo.Distance_miles.sum()
 
-#now you go get file in the filename GUI
-#df_gps = geopandas.read_file(r"C:\Users\peter\Desktop\datascience career\trinity_alps_2020.geojson")
-
-df_gps = geopandas.read_file(geo_filename)
+    return df_geo
 
 
-combined = []
-
-for a in range(len(df_gps.geometry[0])):
-    coords=list(df_gps.geometry[0][a].coords)
-    combined += coords
-
-df_geo = pd.DataFrame(combined, columns =['Longitude', 'Latitude', 'Altitude'])
-df_geo['Altitude_feet'] = df_geo['Altitude'] * 3.28084
-
-
-# In[14]:
-
-# find distance between each coordinate on route
-df_geo['Distance'] = haversine(df_geo.Latitude.shift(), df_geo.Longitude.shift(),
-                 df_geo.Latitude, df_geo.Longitude)
-
-#convert km to miles and its good
-#add cumulative distance
-
-#convert to miles
-df_geo['Distance_miles'] = df_geo['Distance'] * 0.621371
-
-#calculate cumulative distance
-df_geo['Cumulative_distance_miles']= df_geo['Distance_miles'].cumsum()
-
-#create data column of the index of data points
-df_geo['Route_order'] = np.arange(len(df_geo))
-
-#enter in zero for initial coordinate, I assume because it can't subtract from anything
-df_geo.Distance[0] = 0
-df_geo.Distance_miles[0] = 0
-df_geo.Cumulative_distance_miles[0] = 0
-
-#create a normalized distance
-df_geo['Cumulative_distance_normalized'] = df_geo.Cumulative_distance_miles / df_geo.Distance_miles.sum()
-
+# In[]
+df_geo = create_geo_df(geo_filename)
 
 # In[15]:
 
@@ -720,7 +717,7 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True,use_reloader=False)
     
     #for spyder add
     #use_reloader=False
