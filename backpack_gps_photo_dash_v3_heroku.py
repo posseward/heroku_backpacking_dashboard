@@ -42,9 +42,6 @@ df = create_image_df(image_directory)
 
 # In[11]:
 
-#generate static image for display on website
-list_of_images = df['ID_list'].tolist()
-
 static_image_route = '/static/'
 
 # In[12]:
@@ -113,7 +110,7 @@ info = dbc.Container(
                 dcc.Slider(
                     id='my-slider',
                     min=0,
- #                   max=(len(list_of_images) - 1),
+ #                   max=(len(df['ID_list']) - 1),
                     step=1,
    #                 value=0,
                     ),
@@ -150,7 +147,7 @@ info = dbc.Container(
 #                dcc.Slider(
 #                    id='my-slider',
 #                    min=0,
-#                    max=(len(list_of_images) - 1),
+#                    max=(len(df['ID_list']) - 1),
 #                    step=1,
    #                 value=0,
 #                ),
@@ -246,7 +243,7 @@ app.layout = html.Div(
 @app.server.route('{}<image_path>.jpg'.format(static_image_route))
 def serve_image(image_path):
     image_name = '{}.jpg'.format(image_path)
-    if image_name not in list_of_images:
+    if image_name not in df['ID_list']:
         raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
     return flask.send_from_directory(image_directory, image_name)
 
@@ -261,9 +258,6 @@ def serve_image(image_path):
      dash.dependencies.Input('my_timeline', 'clickData')])
 
 def update_image_src_map_timeline_route(clickData_map, clickData_route, clickData_timeline ):
-#    return static_image_route + list_of_images[value], now just at end
-
-
 
     ctx = dash.callback_context
 
@@ -385,7 +379,7 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 
 
 
-#    image_filename = image_directory + '/' +list_of_images[value] # replace with your own image
+#    image_filename = image_directory + '/' +df['ID_list'][value] # replace with your own image
 #    encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 
@@ -394,7 +388,7 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 #'data:image/png;base64,{}'.format(encoded_image.decode())
 #    print(image_filename)
 
-    return static_image_route + list_of_images[value] , fig_map, fig_timeline, fig_route
+    return static_image_route + df['ID_list'][value] , fig_map, fig_timeline, fig_route
 
 #mode='jupyterlab'   inline   external
 
