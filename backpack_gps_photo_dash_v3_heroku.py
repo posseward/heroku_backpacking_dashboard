@@ -74,6 +74,12 @@ df = predict_image_route_distance(df,df_geo)
 
 timepoints_18, timepoints_6 = daylight_times(df['Events_local'])
 
+# In[26]:
+df_meta = pd.DataFrame(data= ({'directory': [image_directory], 'zoom': [zoom],
+    'center_longitude': [center['lon']], 'center_latitude': [center['lat']],
+    'trip_start': (min(df['Events_local'])).round(freq = 'D')}
+    ))
+
 
 # In[28]:
 
