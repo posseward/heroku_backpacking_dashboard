@@ -134,10 +134,30 @@ def zoom_center(lons: tuple=None, lats: tuple=None, lonlats: tuple=None,
 
 # In[4]:
 
+
 #enter path to your folder of images
 path_imagefolder = 'rae_lakes_github'
 
+
+# In[5]:
+
+
+#from tkinter import filedialog
+#from tkinter import *
+#root = Tk()
+#root.withdraw()
+#path_imagefolder = filedialog.askdirectory()
+
+
+# In[6]:
+
+
+#from tkinter import filedialog as fd
+#geo_filename = fd.askopenfilename()
+
+
 # In[7]:
+
 
 #get data from images (coordinates and timepoints) and image file names
 image_list = os.listdir(path_imagefolder)
@@ -169,6 +189,7 @@ df.reset_index(drop=True, inplace=True)
 
 # In[8]:
 
+
 df_events = []
 
 for event in range(len(df)):
@@ -176,6 +197,7 @@ for event in range(len(df)):
     time_event = datetime.strptime(df['UTC-Time'][event], "%H:%M:%S")
     combine_event = datetime.combine(datetime.date(date_event), datetime.time(time_event))
     df_events.append(combine_event)
+
 
 #create data column of timepoints
 df['Events'] = df_events
@@ -197,10 +219,13 @@ df['Events_difference'] = df.Events_normalized - df.Events_normalized.shift()
 df['Events_difference'][0] = 0
 df['ID_order'] = np.arange(len(df))
 
+
 # In[9]:
+
 
 #convert events to universial time??
 df['Events'] = df['Events'].dt.tz_localize('UTC')
+
 
 # In[10]:
 
@@ -211,19 +236,23 @@ df['Events_local'] = df['Events'].dt.tz_convert('US/Pacific')
 
 # In[11]:
 
+
 #generate static image for display on website
 image_directory = path_imagefolder
 list_of_images = df['ID_list'].tolist()
 
 static_image_route = '/static/'
 
+
 # In[12]:
+
 
 #get geojson file
 geo_filename = 'rae_lakes_2020.geojson'
 
 
 # In[13]:
+
 
 #go get the GPS track, probably move this up to the beginning with getting the other data
 
@@ -244,6 +273,7 @@ df_geo['Altitude_feet'] = df_geo['Altitude'] * 3.28084
 
 
 # In[14]:
+
 
 # find distance between each coordinate on route
 df_geo['Distance'] = haversine(df_geo.Latitude.shift(), df_geo.Longitude.shift(),
@@ -272,6 +302,7 @@ df_geo['Cumulative_distance_normalized'] = df_geo.Cumulative_distance_miles / df
 
 # In[15]:
 
+
 #find zoom and center for map
 zoom, center = zoom_center(
     lons= list(df_geo.Longitude),
@@ -279,7 +310,9 @@ zoom, center = zoom_center(
     width_to_height = 4.0
 )
 
+
 # In[16]:
+
 
 #https://stackoverflow.com/questions/47534715/get-nearest-point-from-each-other-in-pandas-dataframe
 
@@ -316,18 +349,38 @@ for i in columns:
 
     #find 10 closest
 
+
+
 # In[19]:
+
+
 #transpose it
 df_close = pd.DataFrame(dict)
 df_close = df_close.T
 
+
+# In[20]:
+
+
+# NEED TO CHANE THIS SO THAT THE SELECTED VALUE IS NOT THE CLOSEST VALUE BUT THE LOWEST?
+
+
+# In[21]:
+
+
+
+#df_geo.iloc[df_close.iloc[0]].Cumulative_distance_normalized
+
+
 # In[22]:
+
 
 previous_location = df_geo.iloc[df_close.iloc[0]].min().Cumulative_distance_normalized
 #previous_location
 
 
 # In[23]:
+
 
 # creating a list of dataframe columns
 distance_difference = []
@@ -365,6 +418,10 @@ for i in columns:
     #print(previous_location)
 
 
+
+
+
+
 # In[24]:
 
 
@@ -372,6 +429,7 @@ df['Cumulative_distance_miles'] = best_cumulative_time
 
 
 # In[25]:
+
 
 #for each column, find 5 lowest distance values. Then find the 5 corresponding cumulative distances
 #for each column, find the its increamental increase in normalized time
@@ -397,9 +455,22 @@ def daylight_times(test):
 timepoints_18, timepoints_6 = daylight_times(test)
 
 
+# In[30]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# ### Generate Dashboard
+
 # In[28]:
 
-### Generate Dashboar
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
