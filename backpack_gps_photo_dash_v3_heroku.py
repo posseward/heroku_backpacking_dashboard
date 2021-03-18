@@ -278,99 +278,87 @@ zoom, center = zoom_center(
 #find the closest point to another in a dataframe
 
 
-
-mat = scipy.spatial.distance.cdist(df_geo[['Latitude','Longitude']],
-                              df[['Latitude','Longitude']], metric='euclidean')
-
-
-# In[17]:
-
-
-#create data frame with index as each route coordinate and columns as picture coordinates and each value being the distance
-#between the the two
-new_df = pd.DataFrame(mat, index=df_geo['Route_order'], columns=df['ID_order'])
-#new_df
-
-
-# In[18]:
-
-
-#create a dictionary list of the dataframe columns, find ten cloest
-dict = {}
-
-
-# creating a list of dataframe columns
-columns = list(new_df)
-
-for i in columns:
-    test = new_df.sort_values(by=[i])
-    dict[i] =test[i].index[0:10]
-
-    #find 10 closest
-
-# In[19]:
-#transpose it
-df_close = pd.DataFrame(dict)
-df_close = df_close.T
-
-# In[22]:
-
-previous_location = df_geo.iloc[df_close.iloc[0]].min().Cumulative_distance_normalized
-#previous_location
-
-
-# In[23]:
-
-# creating a list of dataframe columns
-distance_difference = []
-best_index = []
-best_spacetime = []
-best_cumulative_time = []
-
-previous_location = df_geo.iloc[df_close.iloc[0].min()].Cumulative_distance_normalized
-
-# creating a list of dataframe columns
-i = range(len(df_close))
-
-for i in columns:
-
-    distance_difference.append( (df_geo.iloc[df_close.iloc[i]].Cumulative_distance_normalized - previous_location ))
-    #print(distance_difference[i])
-    temporal_difference = df['Events_difference'][i]
-    #print(temporal_difference)
-    spacetime = (temporal_difference - (distance_difference[i]))
-    #print(spacetime)
-    df_spacetime = pd.DataFrame(spacetime)
-    #print(df_spacetime)
-
-    best_index.append (   int(df_spacetime.abs().idxmin()) )
-    #print(best_index)
-    best_spacetime.append ( float(df_spacetime.abs().min() ))
-    #print(best_spacetime)
-
-    best_cumulative_time.append(df_geo['Cumulative_distance_miles'][best_index[i]])
-
-    #best_index.append(spacetime.index[min(spacetime, key=abs)])
-    #best_spacetime.append( min(spacetime, key=abs) )
-
-    previous_location = df_geo.iloc[best_index[i]].Cumulative_distance_normalized
-    #print(previous_location)
-
-
-# In[24]:
-
-
-df['Cumulative_distance_miles'] = best_cumulative_time
-
-
-# In[25]:
-
+def predict_image_route_distance(df,df_geo):
+    
 #for each column, find 5 lowest distance values. Then find the 5 corresponding cumulative distances
 #for each column, find the its increamental increase in normalized time
 #for each column subtract the current cumulative distance from the previous one. To get distance increase.
 #I guess for the first timepoint the distance increase is just from 0, as in the time increase.
 #Compare distance increase to time increase, then pick accordingly
 
+    
+    mat = scipy.spatial.distance.cdist(df_geo[['Latitude','Longitude']],
+                                  df[['Latitude','Longitude']], metric='euclidean')
+    
+    #create data frame with index as each route coordinate and columns as picture coordinates and each value being the distance
+    #between the the two
+    new_df = pd.DataFrame(mat, index=df_geo['Route_order'], columns=df['ID_order'])
+    #new_df
+    
+    #create a dictionary list of the dataframe columns, find ten cloest
+    dict = {}
+    
+    
+    # creating a list of dataframe columns
+    columns = list(new_df)
+    
+    for i in columns:
+        test = new_df.sort_values(by=[i])
+        dict[i] =test[i].index[0:10]
+    
+        #find 10 closest
+    
+    #transpose it
+    df_close = pd.DataFrame(dict)
+    df_close = df_close.T
+    
+    previous_location = df_geo.iloc[df_close.iloc[0]].min().Cumulative_distance_normalized
+    #previous_location
+    
+    # creating a list of dataframe columns
+    distance_difference = []
+    best_index = []
+    best_spacetime = []
+    best_cumulative_time = []
+    
+    previous_location = df_geo.iloc[df_close.iloc[0].min()].Cumulative_distance_normalized
+    
+    # creating a list of dataframe columns
+    i = range(len(df_close))
+    
+    for i in columns:
+    
+        distance_difference.append( (df_geo.iloc[df_close.iloc[i]].Cumulative_distance_normalized - previous_location ))
+        #print(distance_difference[i])
+        temporal_difference = df['Events_difference'][i]
+        #print(temporal_difference)
+        spacetime = (temporal_difference - (distance_difference[i]))
+        #print(spacetime)
+        df_spacetime = pd.DataFrame(spacetime)
+        #print(df_spacetime)
+    
+        best_index.append (   int(df_spacetime.abs().idxmin()) )
+        #print(best_index)
+        best_spacetime.append ( float(df_spacetime.abs().min() ))
+        #print(best_spacetime)
+    
+        best_cumulative_time.append(df_geo['Cumulative_distance_miles'][best_index[i]])
+    
+        #best_index.append(spacetime.index[min(spacetime, key=abs)])
+        #best_spacetime.append( min(spacetime, key=abs) )
+    
+        previous_location = df_geo.iloc[best_index[i]].Cumulative_distance_normalized
+        #print(previous_location)
+    
+    df['Cumulative_distance_miles'] = best_cumulative_time
+    
+    return df
+
+
+
+# In[24]:
+
+df = predict_image_route_distance(df,df_geo)
 
 # In[26]:
 
@@ -391,7 +379,7 @@ timepoints_18, timepoints_6 = daylight_times(test)
 
 # In[28]:
 
-### Generate Dashboar
+### Generate Dashboard
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
