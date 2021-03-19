@@ -34,8 +34,10 @@ from functions import *
 # In[4]:
 
 #enter path to your folder of images
-image_directory = 'rae_lakes_github'
+image_directory =   'assets_photos/' + 'trinity_alps'
 
+#rae_lakes_github
+#trinity_alps
 
 # In[]
 df = create_image_df(image_directory)
@@ -47,9 +49,10 @@ static_image_route = '/static/'
 # In[12]:
 
 #get geojson file
-geo_filename =  'assets_geojsons/' + 'rae_lakes_2020.geojson'
+geo_filename =  'assets_geojsons/' + 'trinity_alps_2020.geojson'
 
-
+#rae_lakes_2020.geojson
+#trinity_alps_2020.geojson
 
 # In[]
 df_geo = create_geo_df(geo_filename)
