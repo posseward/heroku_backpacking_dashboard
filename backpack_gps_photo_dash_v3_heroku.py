@@ -34,7 +34,7 @@ from functions import *
 # In[4]:
 
 #enter path to your folder of images
-image_directory =   'assets_photos/' + 'trinity_alps'
+image_directory =  'assets_photos/' +  'rae_lakes_github'
 
 #rae_lakes_github
 #trinity_alps
@@ -42,14 +42,10 @@ image_directory =   'assets_photos/' + 'trinity_alps'
 # In[]
 df = create_image_df(image_directory)
 
-# In[11]:
-
-static_image_route = '/static/'
-
 # In[12]:
 
 #get geojson file
-geo_filename =  'assets_geojsons/' + 'trinity_alps_2020.geojson'
+geo_filename =  'assets_geojsons/' + 'rae_lakes_2020.geojson'
 
 #rae_lakes_2020.geojson
 #trinity_alps_2020.geojson
@@ -169,7 +165,8 @@ info = dbc.Container(
 
 photo_card = dbc.Card(
     [
-        dbc.CardImg(id="image"),
+  #      dbc.CardImg(id="image"),
+         html.Img(id = "image"),
     ],
     body=True,
      style={'backgroundColor': '#323130'},
@@ -237,25 +234,6 @@ app.layout = html.Div(
 
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
-
-
-# Add a static image route that serves images from desktop
-# Be *very* careful here - you don't want to serve arbitrary files
-# from your computer or server
-#@app.server.route('{}<image_path>.jpg'.format(static_image_route))
-#def serve_image(image_path):
-#    image_name = '{}.jpg'.format(image_path)
-#    if image_name not in list_of_images:
-#        raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
-#    return flask.send_from_directory(image_directory, image_name)
-
-@app.server.route('{}<image_path>.jpg'.format(static_image_route))
-def serve_image(image_path):
-    image_name = '{}.jpg'.format(image_path)
-    if image_name not in df['ID_list']:
-        raise Exception('"{}" is excluded from the allowed static files'.format(image_path))
-    return flask.send_from_directory(image_directory, image_name)
-
 
 @app.callback(
     [dash.dependencies.Output('image', 'src'),
@@ -388,17 +366,19 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 
 
 
-#    image_filename = image_directory + '/' +df['ID_list'][value] # replace with your own image
-#    encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+ #   image_filename = image_directory + '/' +df['ID_list'][value] # replace with your own image
+  #  encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 
 #base64 way of serving images
 #this goes in the return, isntead of image_filename
 #'data:image/png;base64,{}'.format(encoded_image.decode())
-#    print(image_filename)
 
+    image_filename = image_directory + '\\' + df['ID_list'][value]
+    encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
-    return static_image_route + df['ID_list'][value] , fig_map, fig_timeline, fig_route
+    return 'data:image/png;base64,{}'.format(encoded_image.decode()) , fig_map, fig_timeline, fig_route
+
 
 #mode='jupyterlab'   inline   external
 
