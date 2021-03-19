@@ -34,7 +34,7 @@ from functions import *
 # In[4]:
 
 #enter path to your folder of images
-image_directory = 'rae_lakes_github'
+image_directory = 'assets_photos/' +'rae_lakes_github'
 
 
 # In[]
@@ -47,7 +47,7 @@ static_image_route = '/static/'
 # In[12]:
 
 #get geojson file
-geo_filename = 'rae_lakes_2020.geojson'
+geo_filename =  'assets_geojsons/' + 'rae_lakes_2020.geojson'
 
 
 
