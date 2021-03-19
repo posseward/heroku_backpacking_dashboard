@@ -34,7 +34,7 @@ from functions import *
 # In[4]:
 
 #enter path to your folder of images
-image_directory = 'assets_photos/' +'rae_lakes_github'
+image_directory = 'rae_lakes_github'
 
 
 # In[]
@@ -393,6 +393,7 @@ def update_image_src_map_timeline_route(clickData_map, clickData_route, clickDat
 #this goes in the return, isntead of image_filename
 #'data:image/png;base64,{}'.format(encoded_image.decode())
 #    print(image_filename)
+    print(static_image_route + df['ID_list'][value])
 
     return static_image_route + df['ID_list'][value] , fig_map, fig_timeline, fig_route
 
